@@ -10,6 +10,7 @@ FPS = 60
 monster_num = 5
 score= 0
 lost = 0
+heart = 5
 
 pygame.display.set_caption("Гра шутер автор Максим Федоришин")
 window = pygame.display.set_mode(SIZE)
@@ -130,9 +131,53 @@ while game:
             (255,255,255)
         )
 
+        text_heart = medium_font.render(
+            "Життя " + str(heart),
+            True,
+            (255,255,255)
+        )
+
         window.blit(text_score,(0,0))
         window.blit(text_lost,(0,40))
+        window.blit(text_heart,(0,80))
 
+        shot_monsters = pygame.sprite.groupcollide( monsters,
+                                                    bullets,
+                                                    True, True)
+        for i in shot_monsters:
+            new_enemy = Enemy("ufo.png",(randint(50, WIDTH-50), 0),
+                              randint(2,8),
+                              (75,50))
+
+            monsters.add(new_enemy)
+            score += 1
+
+
+        collisions = pygame.sprite.spritecollide(player, monsters, True)   
+        for c in collisions:
+            heart -= 1
+            new_enemy = Enemy("ufo.png",(randint(50, WIDTH-50), 0),
+                              randint(2,8),
+                              (75,50))
+
+            monsters.add(new_enemy)
+            
+        
+
+
+        if score >= 10:
+            finish = True
+            monsters.empty()
+            monsters.draw(window)
+
+            text_win = big_font.render("YOU WIN", True, (255,0,0))
+            window.blit(text_win,(WIDTH/2-50, HEIGHT/2))
+
+        if lost >10  or heart < 0:
+            finish = True
+
+            text_lose = big_font.render("YOU lose", True, (255,0,0))
+            window.blit(text_lose,(WIDTH/2-50, HEIGHT/2))
 
 
     pygame.display.update()
